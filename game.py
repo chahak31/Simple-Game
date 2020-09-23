@@ -5,11 +5,14 @@ import random
 
 #Set up screen
 window = turtle.Screen()
-window.bgcolor("lightgreen")
+window.bgcolor("black")
+#works faster
+window.tracer(2)
 
 #Draw Border
 mypen = turtle.Turtle()
 mypen.penup()
+mypen.color("white")
 mypen.setposition(-300,-300)
 mypen.pendown()
 mypen.pensize(3)
@@ -25,16 +28,22 @@ player.shape("triangle")
 player.penup() #no tail
 player.speed(0)
 
-#create goal
-goal = turtle.Turtle()
-goal.shape("circle")
-goal.color("red")
-goal.penup()
-goal.speed(0)
-goal.setposition(random.randint(-300,300),random.randint(-300,300))
+#create goals
+maxGoals=6
+goals=[]
+
+for count in range(maxGoals):
+    goals.append(turtle.Turtle())
+    goals[count].shape("circle")
+    goals[count].color("red")
+    goals[count].penup()
+    goals[count].speed(0)
+    goals[count].setposition(random.randint(-300,300),random.randint(-300,300))
 
 #set speed variable
 speed = 1
+#score variable
+score = 0
 
 #Define functions
 def turnleft():
@@ -73,18 +82,29 @@ while True:
 
     if player.ycor()>300 or player.ycor()<-300:
         player.right(180)
-
-    #collision checking
-    if isCollision(player, goal):
-        goal.setposition(random.randint(-300,300),random.randint(-300,300))
-        goal.right(random.randint(0,360))
         
     #move the goal
-    goal.forward(3)
+    for count in range(maxGoals): 
+        goals[count].forward(3)
 
-    #Boundary Checking
-    if goal.xcor()>300 or goal.xcor()<-300:
-        goal.right(180)
+        #Boundary Checking
+        if goals[count].xcor()>300 or goals[count].xcor()<-300:
+            goals[count].right(180)
 
-    if goal.ycor()>300 or goal.ycor()<-300:
-        goal.right(180)
+        if goals[count].ycor()>300 or goals[count].ycor()<-300:
+            goals[count].right(180)
+
+        #collision checking
+        if isCollision(player, goals[count]):
+            goals[count].setposition(random.randint(-300,300),random.randint(-300,300))
+            goals[count].right(random.randint(0,360))
+            score+=1
+            #draw score on screen
+            mypen.undo()
+            mypen.penup()
+            mypen.hideturtle()
+            mypen.setposition(-290,310)
+            scorestring ="Score: "+ str(score)
+            mypen.write(scorestring, False, align="left", font=("Arial",14,"normal"))
+
+#window.exitonclick()          
